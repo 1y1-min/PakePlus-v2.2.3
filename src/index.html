@@ -1,11 +1,713 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus</title>
-    </head>
-    <body>
-        Hello World
-    </body>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>托马斯·杨双缝干涉实验 · 白色背景版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+        }
+
+        /* 全局白色背景 */
+        body {
+            background: #f8fafc;  /* 极浅灰底，让白色卡片更有层次 */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 头部 —— 白色卡片 */
+        header {
+            text-align: center;
+            padding: 28px 32px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #475569;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .experiment-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        /* 动画画布容器 —— 白色卡片 */
+        .animation-container {
+            flex: 1;
+            min-width: 300px;
+            min-height: 520px;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        #experimentCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: white; /* 确保画布本身也是白色 */
+        }
+
+        /* 右侧控制面板 —— 白色卡片 */
+        .controls {
+            flex: 0 0 360px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 每个控制组 —— 浅灰底，柔和区分 */
+        .control-group {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 18px;
+            border-left: 4px solid #3b82f6;
+            border: 1px solid #eef2f6;
+        }
+
+        /* 干涉图案说明卡片保持纯白（但已在白色面板内，可微调） */
+        .control-group.legend-white {
+            background: #ffffff;
+            border-left: 4px solid #f43f5e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .control-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-title i {
+            color: #3b82f6;
+            font-size: 1.2rem;
+        }
+
+        .slider-container {
+            margin-bottom: 18px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .slider-value {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+            border: 2px solid white;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 40px;
+            background: #f1f5f9;
+            color: #1e293b;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid #cbd5e1;
+        }
+
+        button i {
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.04);
+        }
+
+        button.primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+
+        button.primary:hover {
+            background: #1d4ed8;
+        }
+
+        button.reset {
+            background: #f43f5e;
+            color: white;
+            border: none;
+        }
+
+        button.reset:hover {
+            background: #e11d48;
+        }
+
+        /* 底部信息面板 —— 白色卡片 */
+        .info-panel {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px 32px;
+            margin-top: 8px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-title i {
+            color: #2563eb;
+        }
+
+        .info-content {
+            line-height: 1.7;
+            font-size: 1.05rem;
+            color: #334155;
+        }
+
+        .info-content p {
+            margin-bottom: 16px;
+        }
+
+        .highlight {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .formula {
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 24px 0;
+            padding: 18px;
+            background: #f8fafc;
+            border-radius: 16px;
+            font-family: 'Courier New', monospace;
+            border: 1px dashed #cbd5e1;
+            color: #0f172a;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 24px;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            width: 100%;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* 白色卡片内的文字颜色覆盖 */
+        .control-group p, .control-group span {
+            color: #334155;
+        }
+
+        .control-group .highlight {
+            color: #dc2626;
+        }
+
+        #currentSpacing {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1100px) {
+            .experiment-area {
+                flex-direction: column;
+            }
+            .controls {
+                flex: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .subtitle { font-size: 1rem; }
+            .control-group, .info-panel { padding: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            h1 { font-size: 1.8rem; }
+            .button-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>托马斯·杨双缝干涉实验</h1>
+            <p class="subtitle">托马斯·杨于1801年进行的经典实验，首次展示了光的波动性质。本模拟展示了光波通过两个狭缝后产生的干涉图案，验证了光的波动性。</p>
+        </header>
+
+        <div class="experiment-area">
+            <div class="animation-container">
+                <canvas id="experimentCanvas"></canvas>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <h3 class="control-title"><i class="fas fa-sliders-h"></i> 实验参数控制</h3>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>波长 λ</span>
+                            <span class="slider-value" id="wavelengthValue">500 nm</span>
+                        </div>
+                        <input type="range" id="wavelengthSlider" min="400" max="700" value="500" step="10">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>狭缝间距 d</span>
+                            <span class="slider-value" id="slitSeparationValue">0.20 mm</span>
+                        </div>
+                        <input type="range" id="slitSeparationSlider" min="50" max="500" value="200" step="10">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>狭缝宽度 a</span>
+                            <span class="slider-value" id="slitWidthValue">0.05 mm</span>
+                        </div>
+                        <input type="range" id="slitWidthSlider" min="10" max="100" value="50" step="5">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>屏幕距离 L</span>
+                            <span class="slider-value" id="screenDistanceValue">1.0 m</span>
+                        </div>
+                        <input type="range" id="screenDistanceSlider" min="500" max="2000" value="1000" step="50">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3 class="control-title"><i class="fas fa-cogs"></i> 实验控制</h3>
+                    <div class="button-group">
+                        <button id="startButton" class="primary"><i class="fas fa-play"></i> 开始</button>
+                        <button id="pauseButton"><i class="fas fa-pause"></i> 暂停</button>
+                        <button id="resetButton" class="reset"><i class="fas fa-redo"></i> 重置</button>
+                        <button id="fullscreenButton"><i class="fas fa-expand"></i> 全屏</button>
+                    </div>
+                </div>
+
+                <!-- 干涉图案说明（白色卡片风格） -->
+                <div class="control-group legend-white">
+                    <h3 class="control-title"><i class="fas fa-lightbulb"></i> 干涉图案说明</h3>
+                    <div style="line-height: 1.7;">
+                        <p><span class="highlight">亮条纹：</span>光波干涉相长，光强最大</p>
+                        <p><span class="highlight">暗条纹：</span>光波干涉相消，光强最小</p>
+                        <p><span class="highlight">条纹间距：</span>Δy = λL / d</p>
+                        <p id="currentSpacing">当前条纹间距：2.50 mm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3 class="info-title"><i class="fas fa-info-circle"></i> 实验原理与历史意义</h3>
+            <div class="info-content">
+                <p>托马斯·杨在1801年进行了著名的双缝干涉实验，让光通过两个相距很近的狭缝，在后面的屏幕上产生了明暗相间的干涉条纹。这个实验为光的波动说提供了有力证据，否定了牛顿的微粒说。</p>
+
+                <div class="formula">
+                    I = 4I₀ cos²(πd sinθ/λ) · [sin(πa sinθ/λ)/(πa sinθ/λ)]²
+                </div>
+
+                <p>双缝干涉的光强分布公式中，第一部分 <span class="highlight">4I₀cos²(πd sinθ/λ)</span> 描述双缝干涉图样，第二部分 <span class="highlight">[sin(πa sinθ/λ)/(πa sinθ/λ)]²</span> 描述单缝衍射的调制作用。</p>
+
+                <p>实验证明光具有波动性，为后来的光的电磁理论和量子力学的发展奠定了基础。在现代物理学中，双缝实验也被用于演示量子力学中的波粒二象性。</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>双缝干涉实验模拟 | 本模拟基于波动光学原理 | 仅供教学演示使用</p>
+            <p>© 2023 物理实验模拟 · 托马斯·杨双缝干涉实验</p>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('experimentCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                drawExperiment();
+            }
+
+            let params = {
+                wavelength: 500,
+                slitSeparation: 0.2,
+                slitWidth: 0.05,
+                screenDistance: 1000,
+                isRunning: true,
+                animationFrameId: null
+            };
+
+            const wavelengthSlider = document.getElementById('wavelengthSlider');
+            const slitSeparationSlider = document.getElementById('slitSeparationSlider');
+            const slitWidthSlider = document.getElementById('slitWidthSlider');
+            const screenDistanceSlider = document.getElementById('screenDistanceSlider');
+            const wavelengthValue = document.getElementById('wavelengthValue');
+            const slitSeparationValue = document.getElementById('slitSeparationValue');
+            const slitWidthValue = document.getElementById('slitWidthValue');
+            const screenDistanceValue = document.getElementById('screenDistanceValue');
+            const currentSpacing = document.getElementById('currentSpacing');
+            const startButton = document.getElementById('startButton');
+            const pauseButton = document.getElementById('pauseButton');
+            const resetButton = document.getElementById('resetButton');
+            const fullscreenButton = document.getElementById('fullscreenButton');
+
+            function calculateFringeSpacing() {
+                const lambda = params.wavelength * 1e-6;
+                const L = params.screenDistance;
+                const d = params.slitSeparation;
+                return (lambda * L) / d;
+            }
+
+            function updateParameterDisplays() {
+                wavelengthValue.textContent = `${params.wavelength} nm`;
+                slitSeparationValue.textContent = `${params.slitSeparation.toFixed(2)} mm`;
+                slitWidthValue.textContent = `${params.slitWidth.toFixed(2)} mm`;
+                screenDistanceValue.textContent = `${(params.screenDistance / 1000).toFixed(1)} m`;
+                const spacing = calculateFringeSpacing();
+                currentSpacing.textContent = `当前条纹间距：${spacing.toFixed(2)} mm`;
+            }
+
+            // ---------- 绘制（纯白画布）----------
+            function drawExperiment() {
+                const width = canvas.width;
+                const height = canvas.height;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+
+                drawGrid(width, height);
+                drawApparatus(width, height);
+                drawInterferencePattern(width, height);
+                if (params.isRunning) drawWaveFronts(width, height);
+                drawLabels(width, height);
+            }
+
+            function drawGrid(width, height) {
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 0.8;
+                for (let x = 0; x < width; x += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < height; y += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+            }
+
+            function drawApparatus(width, height) {
+                const centerX = width * 0.2;
+                const slitX = width * 0.5;
+                const screenX = width * 0.8;
+
+                // 光源
+                ctx.fillStyle = '#fbbf24';
+                ctx.shadowColor = '#fde68a';
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.arc(centerX, height/2, 14, 0, Math.PI*2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(centerX, height/2, 8, 0, Math.PI*2);
+                ctx.fill();
+
+                // 光线
+                ctx.strokeStyle = '#fcd34d';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(centerX + 14, height/2);
+                ctx.lineTo(slitX - 8, height/2);
+                ctx.stroke();
+
+                // 双缝板
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(slitX - 12, height/2 - 140, 24, 280);
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(slitX - 8, height/2 - 140, 16, 280);
+
+                const slitSpacing = (params.slitSeparation / 0.5) * 18;
+                const slitW = Math.max(4, (params.slitWidth / 0.1) * 4);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(slitX - slitW/2, height/2 - slitSpacing/2 - slitW/2, slitW, slitW);
+                ctx.fillRect(slitX - slitW/2, height/2 + slitSpacing/2 - slitW/2, slitW, slitW);
+
+                // 观察屏
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(screenX - 6, height/2 - 170, 12, 340);
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillRect(screenX - 3, height/2 - 170, 6, 340);
+            }
+
+            function drawInterferencePattern(width, height) {
+                const screenX = width * 0.8;
+                const screenLeft = screenX - 6;
+                const screenRight = screenX + 6;
+                const screenTop = height/2 - 170;
+                const screenBottom = height/2 + 170;
+
+                const lambda = params.wavelength * 1e-9;
+                const d = params.slitSeparation * 1e-3;
+                const a = params.slitWidth * 1e-3;
+                const L = params.screenDistance * 1e-3;
+
+                for (let y = screenTop; y < screenBottom; y++) {
+                    const yPos = (y - height/2) * 0.001;
+                    const theta = Math.atan(yPos / L);
+                    const beta = Math.PI * d * Math.sin(theta) / lambda;
+                    const alpha = Math.PI * a * Math.sin(theta) / lambda;
+                    const singleSlitFactor = (alpha !== 0) ? Math.pow(Math.sin(alpha)/alpha, 2) : 1;
+                    const intensity = Math.pow(Math.cos(beta), 2) * singleSlitFactor;
+                    const intensityValue = Math.max(0, Math.min(1, intensity));
+                    const r = Math.floor(255 * intensityValue);
+                    const g = Math.floor(200 * intensityValue + 55);
+                    const b = Math.floor(100 * intensityValue + 155);
+                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    ctx.fillRect(screenLeft, y, screenRight - screenLeft, 1);
+                }
+
+                const patternLeft = screenX + 25;
+                const patternWidth = 140;
+                for (let y = screenTop; y < screenBottom; y++) {
+                    const yPos = (y - height/2) * 0.001;
+                    const theta = Math.atan(yPos / L);
+                    const beta = Math.PI * d * Math.sin(theta) / lambda;
+                    const alpha = Math.PI * a * Math.sin(theta) / lambda;
+                    const singleSlitFactor = (alpha !== 0) ? Math.pow(Math.sin(alpha)/alpha, 2) : 1;
+                    const intensity = Math.pow(Math.cos(beta), 2) * singleSlitFactor;
+                    const barWidth = intensity * patternWidth;
+                    ctx.fillStyle = intensity > 0.5 ? '#fbbf24' : '#b45309';
+                    ctx.fillRect(patternLeft, y, barWidth, 1);
+                }
+            }
+
+            let waveOffset = 0;
+            function drawWaveFronts(width, height) {
+                const centerX = width * 0.2;
+                const slitX = width * 0.5;
+                const screenX = width * 0.8;
+                const slitSpacing = (params.slitSeparation / 0.5) * 18;
+
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([8, 6]);
+                const waveCount = 5;
+                const waveLength = 28;
+                for (let i = 0; i < waveCount; i++) {
+                    const radius = 14 + (waveOffset + i * waveLength) % (waveLength * waveCount);
+                    if (radius < slitX - centerX - 5) {
+                        ctx.beginPath();
+                        ctx.arc(centerX, height/2, radius, 0, Math.PI*2);
+                        ctx.stroke();
+                    }
+                }
+
+                ctx.strokeStyle = '#3b82f6';
+                const slitTopY = height/2 - slitSpacing/2;
+                const slitBottomY = height/2 + slitSpacing/2;
+                for (let i = 0; i < waveCount; i++) {
+                    const radius = 10 + (waveOffset + i * waveLength) % (waveLength * waveCount);
+                    if (radius < screenX - slitX - 5) {
+                        ctx.beginPath();
+                        ctx.arc(slitX, slitTopY, radius, 0, Math.PI*2);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(slitX, slitBottomY, radius, 0, Math.PI*2);
+                        ctx.stroke();
+                    }
+                }
+                ctx.setLineDash([]);
+                if (params.isRunning) {
+                    waveOffset += 2;
+                    if (waveOffset > 100) waveOffset = 0;
+                }
+            }
+
+            function drawLabels(width, height) {
+                ctx.font = 'bold 15px "Segoe UI", sans-serif';
+                ctx.fillStyle = '#1e293b';
+                ctx.textAlign = 'center';
+                ctx.fillText('光源', width * 0.2, height/2 - 35);
+                ctx.fillText('双缝板', width * 0.5, height/2 - 160);
+                ctx.fillText('观察屏', width * 0.8, height/2 - 190);
+                ctx.fillText('干涉图案', width * 0.8 + 95, height/2 - 190);
+
+                ctx.font = '13px monospace';
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#334155';
+                ctx.fillText(`波长: ${params.wavelength} nm`, 20, 30);
+                ctx.fillText(`狭缝间距: ${params.slitSeparation.toFixed(2)} mm`, 20, 52);
+                ctx.fillText(`狭缝宽度: ${params.slitWidth.toFixed(2)} mm`, 20, 74);
+                ctx.fillText(`屏幕距离: ${(params.screenDistance/1000).toFixed(1)} m`, 20, 96);
+                ctx.fillText(`条纹间距: ${calculateFringeSpacing().toFixed(2)} mm`, 20, 118);
+            }
+
+            function animate() {
+                drawExperiment();
+                if (params.isRunning) {
+                    params.animationFrameId = requestAnimationFrame(animate);
+                }
+            }
+
+            function initEventListeners() {
+                wavelengthSlider.addEventListener('input', function() {
+                    params.wavelength = parseInt(this.value);
+                    updateParameterDisplays();
+                });
+                slitSeparationSlider.addEventListener('input', function() {
+                    params.slitSeparation = parseInt(this.value) / 1000;
+                    updateParameterDisplays();
+                });
+                slitWidthSlider.addEventListener('input', function() {
+                    params.slitWidth = parseInt(this.value) / 1000;
+                    updateParameterDisplays();
+                });
+                screenDistanceSlider.addEventListener('input', function() {
+                    params.screenDistance = parseInt(this.value);
+                    updateParameterDisplays();
+                });
+
+                startButton.addEventListener('click', () => {
+                    params.isRunning = true;
+                    if (!params.animationFrameId) animate();
+                });
+                pauseButton.addEventListener('click', () => {
+                    params.isRunning = false;
+                    if (params.animationFrameId) {
+                        cancelAnimationFrame(params.animationFrameId);
+                        params.animationFrameId = null;
+                    }
+                });
+                resetButton.addEventListener('click', () => {
+                    params.wavelength = 500;
+                    params.slitSeparation = 0.2;
+                    params.slitWidth = 0.05;
+                    params.screenDistance = 1000;
+                    wavelengthSlider.value = params.wavelength;
+                    slitSeparationSlider.value = params.slitSeparation * 1000;
+                    slitWidthSlider.value = params.slitWidth * 1000;
+                    screenDistanceSlider.value = params.screenDistance;
+                    updateParameterDisplays();
+                });
+                fullscreenButton.addEventListener('click', () => {
+                    const container = document.querySelector('.animation-container');
+                    if (container.requestFullscreen) container.requestFullscreen();
+                    else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+                });
+
+                window.addEventListener('resize', resizeCanvas);
+            }
+
+            function init() {
+                resizeCanvas();
+                initEventListeners();
+                animate();
+                updateParameterDisplays();
+            }
+
+            window.addEventListener('load', init);
+        })();
+    </script>
+</body>
 </html>
